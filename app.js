@@ -19,29 +19,46 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+// New endpoint for /api without time parameter
+app.get("/api", function (req, res) {
+  const currentUnixTime = moment().unix();
+  const currentUtcTime = moment.unix(currentUnixTime).format('ddd, DD MMM YYYY HH:mm:ss [GMT]');
+  res.json({ utc: currentUtcTime, unix: currentUnixTime });
+});
+
 app.get("/api/:time", function (req, res) {
   const { time } = req.params;
 
-  const unixTimestampPattern = /^\d+$/;
+  // Check if the input date string is empty
+  if (!time) {
+    const currentUnixTime = moment().unix();
+    const currentUtcTime = moment.unix(currentUnixTime).format('ddd, DD MMM YYYY HH:mm:ss [GMT]');
+    res.json({ utc: currentUtcTime, unix: currentUnixTime });
+    return;
+  }
 
+  const unixTimestampPattern = /^\d+$/;
   const isUnixFormat = unixTimestampPattern.test(time);
 
   if (isUnixFormat) {
-
-    console.log(time.slice(0, 9))
     const date = moment.unix(time.slice(0, 10));
+    // Check if the date is valid
+    if (!date.isValid()) {
+      res.json({ error: "Invalid Date" });
+      return;
+    }
     const formattedDate = date.format('ddd, DD MMM YYYY HH:mm:ss [GMT]');
-
     res.json({ utc: formattedDate, unix: Number(time) });
   } else {
-
     const utc = new Date(time).toUTCString();
     const unix = moment.utc(utc, "ddd, DD MMM YYYY HH:mm:ss [GMT]").valueOf();
-
-    res.json({ utc, unix })
-
+    // Check if the date is valid
+    if (!moment(utc, "ddd, DD MMM YYYY HH:mm:ss [GMT]").isValid()) {
+      res.json({ error: "Invalid Date" });
+      return;
+    }
+    res.json({ utc, unix });
   }
-
 });
 
 var listener = app.listen(12736, function () {
