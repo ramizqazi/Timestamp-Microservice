@@ -21,9 +21,9 @@ app.get("/", function (req, res) {
 
 // New endpoint for /api without time parameter
 app.get("/api", function (req, res) {
-  const currentUnixTime = moment().unix();
-  const currentUtcTime = moment.utc();
-  res.json({ utc: currentUtcTime, unix: currentUnixTime });
+  const utc = new Date().toUTCString();
+  const unix = moment.utc(utc, "ddd, DD MMM YYYY HH:mm:ss [GMT]").valueOf();
+  res.json({ utc, unix });
 });
 
 app.get("/api/:time", function (req, res) {
