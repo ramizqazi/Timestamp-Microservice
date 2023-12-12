@@ -3,6 +3,7 @@
 
 // init project
 var express = require('express');
+var moment = require('moment');
 var app = express();
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
@@ -29,21 +30,23 @@ app.get("/api/:time", function (req, res) {
 
   if (isUnixFormat) {
 
-    var date = new Date(time * 1000).toUTCString();
+    console.log(time.slice(0, 9))
+    const date = moment.unix(time.slice(0, 10));
+    const formattedDate = date.format('ddd, DD MMM YYYY HH:mm:ss [GMT]');
 
-    res.json({ utc: date, unix: Number(time) });
+    res.json({ utc: formattedDate, unix: Number(time) });
   } else {
 
     const utc = new Date(time).toUTCString();
-    const unix = Math.floor(new Date(time).getTime() / 1000); 
+    const unix = moment.utc(utc, "ddd, DD MMM YYYY HH:mm:ss [GMT]").valueOf();
 
-    res.json({utc, unix})
+    res.json({ utc, unix })
 
   }
 
 });
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+var listener = app.listen(12736, function () {
+  console.log('Your app is listening on port ' + 12736);
 });
