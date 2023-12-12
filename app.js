@@ -19,8 +19,6 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-
-// your first API endpoint... 
 app.get("/api/:time", function (req, res) {
   const { time } = req.params;
 
@@ -46,7 +44,6 @@ app.get("/api/:time", function (req, res) {
 
 });
 
-// listen for requests :)
 var listener = app.listen(12736, function () {
   console.log('Your app is listening on port ' + 12736);
 });
